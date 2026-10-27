@@ -1,0 +1,71 @@
+# ExamSeat AI -- full-stack deployment (MongoDB + Express + React/Vite).
+#
+# Quick start:
+#   docker compose up --build
+#   Frontend: http://localhost:5173
+#   Backend:  http://localhost:8000/api/health
+#
+# The backend defaults to a local MongoDB URI when run directly (see
+# backend/src/config.js and the README's "Running Locally" section). This
+# compose file provisions a real `mongo` service so the app runs against
+# actual MongoDB end-to-end, which is exactly what backend/src/db/connect.js
+# expects -- no fallback needed here (the embedded local-store fallback in
+# backend/src/db/localStore.js only kicks in when MongoDB truly can't be
+# reached, such as in this project's network-restricted build sandbox).
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/examseat
+      PORT: 8000
+      CORS_ORIGINS: '["http://localhost:5173"]'
+      DETECTION_BACKEND: heuristic
+      PERSON_DETECTION_CONFIDENCE_THRESHOLD: 0.35
+      SEAT_MATCH_MAX_DISTANCE_NORM: 0.12
+      CONFIDENCE_REVIEW_THRESHOLD: 0.60
+      CONFIDENCE_HIGH_THRESHOLD: 0.80
+      IDENTITY_MATCH_THRESHOLD: 0.75
+    # backend/src/config.js resolves DATA_DIR/REPORTS_DIR/MODELS_DIR relative
+    # to the backend package's own parent directory. Inside this image only
+    # backend/ is copied to /app (WORKDIR), so that parent is the container
+    # root -- these mounts match what the app actually resolves to; verified
+    # with `node -e` against the container's __dirname during the build.
+    volumes:
+      - ./data:/data
+      - ./reports:/reports
+      - ./models:/models
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+
+volumes:
+  mongo_data:

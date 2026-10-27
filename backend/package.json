@@ -1,0 +1,27 @@
+{
+  "name": "examseat-ai-backend",
+  "version": "1.0.0",
+  "description": "ExamSeat AI backend -- Express + Mongoose (MERN conversion of the original FastAPI + SQLAlchemy service).",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test tests/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "csv-parse": "^7.0.3",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.3",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "pdfkit": "^0.20.2",
+    "sharp": "^0.35.5",
+    "tesseract.js": "^7.0.0",
+    "uuid": "^14.0.2"
+  }
+}

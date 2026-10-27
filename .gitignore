@@ -1,0 +1,38 @@
+# Node
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+
+# Env files (copy from the matching .env.example)
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+
+# Sandbox-only embedded datastore (see backend/src/db/localStore.js) --
+# never commit this; it's per-machine dev/test data.
+data/localdb/
+
+# Runtime data -- uploaded evidence, processed overlays, generated reports
+# all contain user-uploaded content and should never be committed (see
+# README > Privacy Considerations).
+data/uploads/*
+data/processed/*
+data/demo/*
+!data/uploads/.gitkeep
+!data/processed/.gitkeep
+!data/demo/.gitkeep
+reports/*
+!reports/.gitkeep
+models/*
+!models/.gitkeep
+
+# OS / editor
+.DS_Store
+*.swp
+
+# The archived original Python/Next.js build is kept for reference and
+# is NOT excluded here -- see legacy-python-nextjs/ if you need it.
+backend/data/localdb/
